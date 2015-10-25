@@ -1,4 +1,4 @@
-var chatApp = angular.module('app', ['ngRoute','firebase','luegg.directives']);
+var chatApp = angular.module('app', ['ngRoute','luegg.directives']);
 chatApp.config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
     $routeProvider.
         when('/chat',{
@@ -10,9 +10,8 @@ chatApp.config(['$routeProvider','$locationProvider', function($routeProvider,$l
         });
 }]);
 
-chatApp.controller("ChatCtrl", function($scope, $firebaseArray) {
-    var ref = new Firebase("https://rtchatlb.firebaseio.com/messages");
-    $scope.messages = $firebaseArray(ref.limitToLast(200));
+chatApp.controller("ChatCtrl", function($scope) {
+    $scope.messages = "";
     $scope.username = "test";
     $scope.addMessage = function () {
         $scope.messages.$add({
@@ -21,6 +20,5 @@ chatApp.controller("ChatCtrl", function($scope, $firebaseArray) {
         // empty the field after adding
         $scope.newMessage="";
     };
-
 
 });
