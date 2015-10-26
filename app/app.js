@@ -12,16 +12,14 @@ chatApp.config(['$routeProvider','$locationProvider', function($routeProvider,$l
 
 chatApp.controller("ChatCtrl", function($scope, wsService) {
     $scope.messages = [];
-    console.log("1st usr",$scope.username);
+
     $scope.receiveMessage = function(message) {
         $scope.$apply(function () { // wrapper to update view
-            $scope.username = wsService.username;
-            $scope.messages.push(message);
+            $scope.messages.push({from: message.from, text: message.text});
         });
     };
 
     $scope.addMessage = function () {
-        console.log($scope.username);
         wsService.send($scope.newMessage);
         $scope.newMessage="";
     };
@@ -46,6 +44,10 @@ chatApp.service("wsService", function() {
     connection.onopen = function () {
         // logon element show
         console.log("onopen");
+        $('.ui.modal')
+            .modal('setting', 'closable', false)
+            .modal('show')
+        ;
     };
 
     connection.onerror = function (error) {
@@ -57,22 +59,21 @@ chatApp.service("wsService", function() {
 
         // handle incoming message
         var json = JSON.parse(message.data);
-        if(json.data.text === undefined) {
-            console.log("some text exists");
+        if(json.type === 'name') {
+            console.log("Just setting username, no messages yet.");
         }
         else {
-            console.log("some text doesn't exist");
+            console.log("twas a message!");
+            wsService.username = json.data.from;
+            for(var i=0; i<listeners.length; i++) {
+                //listeners[i](json.data.text);
+                listeners[i]({
+                    from: json.data.from, text: json.data.text
+                });
+            }
         }
-        console.log("message was ", json);
-
-        for(var i=0; i<listeners.length; i++) {
-            listeners[i](json.data.text);
-        }
-        wsService.username = json.data.from;
-        console.log("json username data",json.data.from);
-        console.log("variable username", wsService.username);
-
     };
+
     return wsService;
 
 });

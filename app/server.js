@@ -36,6 +36,8 @@ wsServer.on('request', function(request) {
                 //first time, user needs to set name
                 username = message.utf8Data;
                 console.log((new Date()) + ' User is known as: ' + username + '.');
+                //send username
+                connection.sendUTF(JSON.stringify({ type: 'name', data: username }));
             }
             else {
                 console.log((new Date()) + message.utf8Data);
@@ -45,14 +47,15 @@ wsServer.on('request', function(request) {
                 };
                 msgHistory.push(msgData);
                 msgHistory = msgHistory.slice(-100); // keep only last 100 msgs
-
+                var json = JSON.stringify({ type:'message', data: msgData });
+                wsServer.connections.forEach(function(conn) {
+                    conn.send(json);
+                });
+                console.log(msgData);
             }
-            console.log(msgData);
+
              // broadcast message to all connected clients
-            var json = JSON.stringify({ type:'message', data: msgData });
-            wsServer.connections.forEach(function(conn) {
-                conn.send(json);
-            });
+
 
         }
     });

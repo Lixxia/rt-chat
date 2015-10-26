@@ -16,24 +16,37 @@
                 <div class="item" ng-repeat="message in messages track by $index">
                     <img class="ui avatar image" src="images/av.png">
                     <div class="content">
-                        <a class="header">{{username}}</a>
-                        <!--<div class="description">{{message.text}}</div>-->
-                        <div class="description">{{message}}</div>
+                        <a class="header">{{message.from}}</a>
+                        <div class="description">{{message.text}}</div>
                     </div>
-                    <button class="right floated" ng-click="messages.$remove(message)">x</button>
                 </div>
             </div>
 
         </div>
         <form class="ui bottom attached action input" ng-submit="addMessage()">
             <input ng-model="newMessage" />
-            <button class="ui blue button" type="submit">Add Message</button>
+            <button class="ui blue button" type="submit">Send</button>
         </form>
     </div>
-
 </div>
 
+<div class="ui modal">
+    <h2 class="ui header">
+        <i class="comment outline icon"></i>
+        Login
+    </h2>
 
-
-
+    <div class="actions">
+        <form class="ui form" name="userForm" ng-submit="addMessage()" novalidate>
+            <div class="ui fluid left icon action input" ng-class="{ 'error' : userForm.name.$invalid && !userForm.name.$pristine }">
+                <i class="user icon"></i>
+                <input type="text" name="name" placeholder="Username" ng-model="newMessage" required>
+                <button class="ui button positive" ng-disabled="userForm.$invalid">Login</button>
+            </div>
+        </form>
+    </div>
+    <p ng-show="userForm.name.$invalid && !userForm.name.$pristine" class="ui negative message">
+        Username cannot be blank.
+    </p>
+</div>
 
