@@ -13,11 +13,12 @@
     <div class="twelve wide stretched column">
         <div scroll-glue class="chatbox">
             <div class="ui list">
-                <div class="item" ng-repeat="message in messages">
+                <div class="item" ng-repeat="message in messages track by $index">
                     <img class="ui avatar image" src="images/av.png">
                     <div class="content">
-                        <a class="header">{{message.from}}</a>
-                        <div class="description">{{message.text}}</div>
+                        <a class="header">{{username}}</a>
+                        <!--<div class="description">{{message.text}}</div>-->
+                        <div class="description">{{message}}</div>
                     </div>
                     <button class="right floated" ng-click="messages.$remove(message)">x</button>
                 </div>
