@@ -29,6 +29,11 @@ wsServer.on('request', function(request) {
     var connection = request.accept(null, request.origin);
     var username = false;
     console.log((new Date()) + ' Connection accepted.');
+
+    // Since we've accepted a new connection, send chat history if it exists
+    //if (msgHistory.length > 0) {
+    //    connection.sendUTF(JSON.stringify( { type: 'history', data: msgHistory} ));
+    //}
     //sending messages
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
@@ -45,18 +50,17 @@ wsServer.on('request', function(request) {
                     from: username,
                     text: message.utf8Data
                 };
+                // keep a 100 message history for new users
                 msgHistory.push(msgData);
-                msgHistory = msgHistory.slice(-100); // keep only last 100 msgs
+                msgHistory = msgHistory.slice(-100);
+
+                // send message to connected clients
                 var json = JSON.stringify({ type:'message', data: msgData });
                 wsServer.connections.forEach(function(conn) {
                     conn.send(json);
                 });
                 console.log(msgData);
             }
-
-             // broadcast message to all connected clients
-
-
         }
     });
 

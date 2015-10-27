@@ -62,7 +62,7 @@ chatApp.service("wsService", function() {
         if(json.type === 'name') {
             console.log("Just setting username, no messages yet.");
         }
-        else {
+        else if(json.type === 'message') {
             console.log("twas a message!");
             wsService.username = json.data.from;
             for(var i=0; i<listeners.length; i++) {
@@ -71,6 +71,12 @@ chatApp.service("wsService", function() {
                     from: json.data.from, text: json.data.text
                 });
             }
+        }
+        //else if(json.type === 'history') {
+        //    // feed history to users
+        //}
+        else {
+            console.log("something went wrong.");
         }
     };
 
