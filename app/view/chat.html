@@ -5,11 +5,11 @@
 <div class="ui grid">
     <div class="row">
 
-
+        <!--Room menu-->
         <div class="three wide stretched column">
             <div class="ui fluid secondary pointing vertical menu">
                 <div ng-repeat="room in rooms">
-                    <a class="item" href="#/chat/{{room.id}}/" ng-class="menuClass('{{room.id}}')" ng-click="update()">
+                    <a class="item" href="#/chat/{{room.id}}/" ng-class="menuClass('{{room.id}}')">
                         {{room.name}}
                         <div class="ui teal label" ng-class="showCount('{{room.id}}')">{{room.unread}}</div>
                     </a>
@@ -18,6 +18,7 @@
         </div>
 
 
+        <!--Chatbox area-->
         <div class="twelve wide stretched column">
             <div scroll-glue class="chatbox">
                 <div class="ui comments">
@@ -27,7 +28,7 @@
                         </a>
                         <div class="content">
                             <a class="author">{{message.from}}</a>
-                            <div class="text">{{message.text}}</div>
+                            <div class="text convert-emoji">{{message.text}}</div>
                         </div>
                     </div>
                 </div>
@@ -41,6 +42,7 @@
             </form>
         </div>
 
+        <!--Emoji menu-->
         <div class="one wide column">
             <div class="">
                 <div ng-repeat="emoji in emojis">
@@ -51,6 +53,7 @@
     </div>
 </div>
 
+<!--Login modal-->
 <div class="ui modal">
     <h2 class="ui header">
         <i class="comment outline icon"></i>

@@ -8,6 +8,7 @@ var msgHistory = [
     {room: 2, history: []},
     {room: 3, history: []}
 ];
+
 var chatRooms = [
     { id: 0, name: 'Room 1', unread: 0 },
     { id: 1, name: 'Introductions', unread: 0 },
@@ -27,6 +28,7 @@ function originAllowed(origin) {
     //TODO: make sure origin is website
     return true;
 }
+
 wsServer.on('request', function(request) {
     console.log((new Date()) + ' Connection from ' + request.origin + '.');
     if (!originAllowed(request.origin)) {
@@ -42,7 +44,7 @@ wsServer.on('request', function(request) {
 
     // Since we've accepted a new connection, send chat history if it exists
     if (msgHistory.length > 0) {
-        connection.sendUTF(JSON.stringify( { type: 'history', data: msgHistory} ));
+        connection.sendUTF(JSON.stringify({ type: 'history', data: msgHistory}));
     }
 
     //send rooms
@@ -78,6 +80,10 @@ wsServer.on('request', function(request) {
                     conn.send(json);
                 });
                 console.log(msgData);
+
+                // send updated history
+                var history = JSON.stringify({ type: 'history', data: msgHistory});
+                connection.send(history);
             }
         }
     });
