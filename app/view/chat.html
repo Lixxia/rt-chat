@@ -1,9 +1,20 @@
-<h3 class="ui top attached header hbackground inverted">
-    The realest of realtime Chat
-</h3>
-
 <div class="ui grid">
-    <div class="row">
+    <div class="row nobot">
+        <div class="sixteen wide stretched column">
+            <h3 class="ui top attached header hbackground uppertext inverted">
+                The realest of realtime Chat
+                <div class="hbutton" ng-click="emojiShow = !emojiShow">
+                    <button class="ui right labeled icon button teal">
+                        Emojis
+                        <i class="icon sidebar"></i>
+                    </button>
+                </div>
+            </h3>
+
+        </div>
+    </div> <!-- End Row 1 -->
+
+    <div class="row notop">
 
         <!--Room menu-->
         <div class="three wide stretched column">
@@ -34,7 +45,7 @@
                 </div>
 
             </div>
-            <form class="ui bottom attached action input" ng-submit="addMessage()">
+            <form class="ui bottom attached action input chatbar" ng-submit="addMessage()">
                 <input ng-model="newMessage" />
                 <button class="ui teal icon button" type="submit">
                     <i class="icon edit"></i>
@@ -43,14 +54,15 @@
         </div>
 
         <!--Emoji menu-->
-        <div class="one wide column">
-            <div class="">
+        <div class="one wide stretched column">
+            <div class="ui right vertical secondary icon menu emenu" ng-show="emojiShow">
                 <div ng-repeat="emoji in emojis">
                     <div class="convert-emoji emoji-zoom" ng-click="emojiClick(emoji)">{{emoji}}</div>
                 </div>
             </div>
         </div>
-    </div>
+
+    </div> <!-- End Row2 -->
 </div>
 
 <!--Login modal-->
@@ -73,4 +85,3 @@
         Username cannot be blank.
     </p>
 </div>
-

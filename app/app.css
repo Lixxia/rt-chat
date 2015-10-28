@@ -2,12 +2,15 @@
     padding: 5px 5px 5px 5px;
     overflow: auto;
     word-wrap: break-word;
-    height: 500px;
+    height: 520px;
     width: 100%;
 }
 
 .hbackground {
     background-color: #00B5AD !important;
+}
+
+.uppertext {
     text-transform: uppercase !important;
 }
 
@@ -25,4 +28,30 @@
     -moz-transform: scale(2);
     -o-transform: scale(2);
     transform: scale(2);
+}
+
+.hbutton {
+    float: right !important;
+    margin-right: -5px !important;
+}
+
+.nobot {
+    padding-bottom: 0px !important;
+}
+
+.notop {
+    padding-top: 0px !important;
+}
+
+.chatbar {
+    padding-bottom:10px !important;
+}
+
+.glink {
+    color: #ffffff !important;
+}
+
+.glink:hover {
+    color: #000000 !important;
+    transition: 0.5s color ease;
 }

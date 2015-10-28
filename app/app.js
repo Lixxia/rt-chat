@@ -63,7 +63,10 @@ chatApp.controller("ChatCtrl", function($scope, wsService, roomService, $locatio
 
     $scope.receiveMessage = function(message) {
         // Check if we're in the correct room to receive message
-        if($rootScope.currentRoom === message.room) {
+        if(message.text === "") {
+            console.log("blank message, do nothing.");
+        }
+        else if($rootScope.currentRoom === message.room) {
             console.log("Current room msg");
             $scope.$apply(function () { // another wrapper to update view because angular
                 $scope.messages.push({room: message.room, from: message.from, text: message.text});
@@ -99,7 +102,7 @@ chatApp.controller("ChatCtrl", function($scope, wsService, roomService, $locatio
 });
 
 chatApp.service("wsService", function($q, $timeout, Emojis) {
-    var connection = new WebSocket('ws://192.168.1.7:8000');
+    var connection = new WebSocket('ws://localhost:8000');
 
     var wsService = {};
     var listeners = []; // room id, username, message
