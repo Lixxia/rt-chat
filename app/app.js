@@ -77,6 +77,11 @@ chatApp.controller("ChatCtrl", function($scope, wsService, roomService, $locatio
         }
     };
 
+    $scope.emojiClick = function(emoji) {
+        console.log("emoj?", emoji);
+        $scope.newMessage= $scope.newMessage + emoji;
+    };
+
     $scope.addMessage = function () {
         // append room ID to end of message so we know where it came from
         // pretty dumb solution, come back and fix later. TODO
@@ -107,11 +112,23 @@ chatApp.service("wsService", function($q, $timeout) {
     connection.onopen = function () {
         // logon element show
         console.log("onopen");
-        emojify.setConfig({
-            img_dir: '/app/bower_components/emojify.js/dist/images/basic',
-            mode: 'sprite'
+
+        $(document).ready(function() {
+            $(".convert-emoji").each(function() {
+                var original = $(this).html();
+                var converted = emojione.toImage(original);
+                $(this).html(converted);
+            });
         });
-        emojify.run();
+
+        $(document).ready(function(){
+            $('.emoji-zoom').hover(function() {
+                $(this).addClass('enlarge-emoji');
+
+            }, function() {
+                $(this).removeClass('enlarge-emoji');
+            });
+        });
 
         $('.ui.modal')
             .modal('setting', 'closable', false)
@@ -218,10 +235,10 @@ chatApp.service("roomService", function ($q, $timeout) {
 });
 
 chatApp.factory("Emojis", function() {
-    emojis = [":bowtie:",":laughing:",":blush:",":smiley:",":heart_eyes:",":kissing_closed_eyes:",":+1:",
+    emojis = [":laughing:",":blush:",":smiley:",":heart_eyes:",":kissing_closed_eyes:",
     ":relieved:",":satisfied:",":grimacing:",":confused:",":hushed:",":expressionless:",":unamused:",":sweat_smile:",
     ":sweat:",":clap:",":yellow_heart:",":blue_heart:",":purple_heart:",":green_heart:",":star:",":exclamation:",
-    ":musical_note:",":fire:",":question:",":dash:",":metal:"
+    ":musical_note:",":fire:",":question:",":dash:"
     ];
 
     return {

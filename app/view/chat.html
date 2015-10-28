@@ -18,7 +18,7 @@
         </div>
 
 
-        <div class="ten wide stretched column">
+        <div class="twelve wide stretched column">
             <div scroll-glue class="chatbox">
                 <div class="ui comments">
                     <div class="comment" ng-repeat="message in messages track by $index">
@@ -41,8 +41,12 @@
             </form>
         </div>
 
-        <div class="three wide column">
-
+        <div class="one wide column">
+            <div class="">
+                <div ng-repeat="emoji in emojis">
+                    <div class="convert-emoji emoji-zoom" ng-click="emojiClick(emoji)">{{emoji}}</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

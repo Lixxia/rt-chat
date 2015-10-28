@@ -5,3 +5,19 @@
     height: 500px;
     width: 100%;
 }
+
+.emoji-zoom {
+    width: 15px;
+    -webkit-transition: all .2s ease-in-out;
+    -moz-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+    -ms-transition: all .2s ease-in-out;
+    z-index: 100 !important;
+}
+
+.enlarge-emoji {
+    -webkit-transform: scale(2);
+    -moz-transform: scale(2);
+    -o-transform: scale(2);
+    transform: scale(2);
+}
