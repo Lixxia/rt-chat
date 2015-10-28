@@ -1,0 +1,87 @@
+<div class="ui grid">
+    <div class="row nobot">
+        <div class="sixteen wide stretched column">
+            <h3 class="ui top attached header hbackground uppertext inverted">
+                The realest of realtime Chat
+                <div class="hbutton" ng-click="emojiShow = !emojiShow">
+                    <button class="ui right labeled icon button teal">
+                        Emojis
+                        <i class="icon sidebar"></i>
+                    </button>
+                </div>
+            </h3>
+
+        </div>
+    </div> <!-- End Row 1 -->
+
+    <div class="row notop">
+
+        <!--Room menu-->
+        <div class="three wide stretched column">
+            <div class="ui fluid secondary pointing vertical menu">
+                <div ng-repeat="room in rooms">
+                    <a class="item" href="#/chat/{{room.id}}/" ng-class="menuClass('{{room.id}}')">
+                        {{room.name}}
+                        <div class="ui teal label" ng-class="showCount('{{room.id}}')">{{room.unread}}</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <!--Chatbox area-->
+        <div class="twelve wide stretched column">
+            <div scroll-glue class="chatbox">
+                <div class="ui comments">
+                    <div class="comment" ng-repeat="message in messages track by $index">
+                        <a class="ui avatar">
+                            <img src="images/av.png">
+                        </a>
+                        <div class="content">
+                            <a class="author">{{message.from}}</a>
+                            <div class="text convert-emoji">{{message.text}}</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <form class="ui bottom attached action input chatbar" ng-submit="addMessage()">
+                <input ng-model="newMessage" />
+                <button class="ui teal icon button" type="submit">
+                    <i class="icon edit"></i>
+                </button>
+            </form>
+        </div>
+
+        <!--Emoji menu-->
+        <div class="one wide stretched column">
+            <div class="ui right vertical secondary icon menu emenu" ng-show="emojiShow">
+                <div ng-repeat="emoji in emojis">
+                    <div class="convert-emoji emoji-zoom" ng-click="emojiClick(emoji)">{{emoji}}</div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End Row2 -->
+</div>
+
+<!--Login modal-->
+<div class="ui modal">
+    <h2 class="ui header">
+        <i class="comment outline icon"></i>
+        Login
+    </h2>
+
+    <div class="actions">
+        <form class="ui form" name="userForm" ng-submit="addMessage()" novalidate>
+            <div class="ui fluid left icon action input" ng-class="{ 'error' : userForm.name.$invalid && !userForm.name.$pristine }">
+                <i class="user icon"></i>
+                <input type="text" name="name" placeholder="Username" ng-model="newMessage" required>
+                <button class="ui button ok teal" ng-disabled="userForm.$invalid">Login</button>
+            </div>
+        </form>
+    </div>
+    <p ng-show="userForm.name.$invalid && !userForm.name.$pristine" class="ui negative message">
+        Username cannot be blank.
+    </p>
+</div>
