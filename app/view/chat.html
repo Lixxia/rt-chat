@@ -1,5 +1,5 @@
-<h3 class="ui top attached header">
-    Realtime Chat
+<h3 class="ui top attached header hbackground inverted">
+    The realest of realtime Chat
 </h3>
 
 <div class="ui grid">
@@ -9,7 +9,7 @@
         <div class="three wide stretched column">
             <div class="ui fluid secondary pointing vertical menu">
                 <div ng-repeat="room in rooms">
-                    <a class="item" href="#/chat/{{room.id}}/" ng-class="menuClass('{{room.id}}')" >
+                    <a class="item" href="#/chat/{{room.id}}/" ng-class="menuClass('{{room.id}}')" ng-click="update()">
                         {{room.name}}
                         <div class="ui teal label" ng-class="showCount('{{room.id}}')">{{room.unread}}</div>
                     </a>
@@ -35,7 +35,7 @@
             </div>
             <form class="ui bottom attached action input" ng-submit="addMessage()">
                 <input ng-model="newMessage" />
-                <button class="ui blue icon button" type="submit">
+                <button class="ui teal icon button" type="submit">
                     <i class="icon edit"></i>
                 </button>
             </form>
@@ -62,7 +62,7 @@
             <div class="ui fluid left icon action input" ng-class="{ 'error' : userForm.name.$invalid && !userForm.name.$pristine }">
                 <i class="user icon"></i>
                 <input type="text" name="name" placeholder="Username" ng-model="newMessage" required>
-                <button class="ui button positive" ng-disabled="userForm.$invalid">Login</button>
+                <button class="ui button ok teal" ng-disabled="userForm.$invalid">Login</button>
             </div>
         </form>
     </div>

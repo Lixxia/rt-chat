@@ -6,6 +6,11 @@
     width: 100%;
 }
 
+.hbackground {
+    background-color: #00B5AD !important;
+    text-transform: uppercase !important;
+}
+
 .emoji-zoom {
     width: 15px;
     -webkit-transition: all .2s ease-in-out;

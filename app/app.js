@@ -14,7 +14,7 @@ chatApp.config(['$routeProvider','$locationProvider', function($routeProvider,$l
         });
 }]);
 
-chatApp.controller("ChatCtrl", function($scope, wsService, roomService, $location, $rootScope, Emojis) {
+chatApp.controller("ChatCtrl", function($scope, wsService, roomService, $location, $rootScope, Emojis, $timeout) {
     //Set current room, based on URL
     $rootScope.currentRoom = $location.path().slice(-2,-1);
     console.log("current room got", $rootScope.currentRoom);
@@ -41,6 +41,12 @@ chatApp.controller("ChatCtrl", function($scope, wsService, roomService, $locatio
         $scope.$apply(function () { // wrapper to update view
             $scope.rooms[roomId].unread++;
         });
+    };
+
+    $scope.update = function () {
+        $timeout(function() {
+            Emojis.update();
+        }, 50);
     };
 
     $scope.messages = [];
@@ -234,16 +240,30 @@ chatApp.service("roomService", function ($q, $timeout) {
     return roomService;
 });
 
-chatApp.factory("Emojis", function() {
-    emojis = [":laughing:",":blush:",":smiley:",":heart_eyes:",":kissing_closed_eyes:",
-    ":relieved:",":satisfied:",":grimacing:",":confused:",":hushed:",":expressionless:",":unamused:",":sweat_smile:",
-    ":sweat:",":clap:",":yellow_heart:",":blue_heart:",":purple_heart:",":green_heart:",":star:",":exclamation:",
-    ":musical_note:",":fire:",":question:",":dash:"
+chatApp.factory("Emojis", function($timeout) {
+    emojis = [
+        ":laughing:",":blush:",":smiley:",":heart_eyes:",":kissing_closed_eyes:",
+        ":relieved:",":satisfied:",":grimacing:",":confused:",":hushed:",":expressionless:",":unamused:",":sweat_smile:",
+        ":sweat:",":clap:",":yellow_heart:",":blue_heart:",":purple_heart:",":green_heart:",":star:",":exclamation:",
+        ":musical_note:",":fire:",":question:",":dash:"
     ];
 
     return {
         all: function () {
             return emojis;
+        },
+        update: function() {
+            // make sure emojis are converted to images
+            $timeout(function() {
+                $(document).ready(function() {
+                    $(".convert-emoji").each(function() {
+                        var original = $(this).html();
+                        var converted = emojione.toImage(original);
+                        $(this).html(converted);
+                    });
+                });
+            }, 10);
+
         }
     };
 });
