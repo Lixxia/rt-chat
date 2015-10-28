@@ -1,46 +1,49 @@
 <h3 class="ui top attached header">
-    yas this is chat
+    Realtime Chat
 </h3>
-<div class="ui grid">
-    <div class="three wide stretched column">
-        <div class="ui secondary vertical pointing menu">
-            <div class="header item">Chat Rooms</div>
-            <a class="active item">
-                Room 1
-                <div class="ui teal label">1</div>
-            </a>
-            <a class="item">
-                Room 2
-                <div class="ui label">1</div>
-            </a>
-            <a class="item">
-                Room 3
-                <div class="ui label">1</div>
-            </a>
-        </div>
-    </div>
 
-    <div class="twelve wide stretched column">
-        <div scroll-glue class="chatbox">
-            <div class="ui comments">
-                <div class="comment" ng-repeat="message in messages track by $index">
-                    <a class="ui avatar">
-                        <img src="images/av.png">
+<div class="ui grid">
+    <div class="row">
+
+
+        <div class="three wide stretched column">
+            <div class="ui fluid secondary pointing vertical menu">
+                <div ng-repeat="room in rooms">
+                    <a class="item" href="#/chat/{{room.id}}/" ng-class="menuClass('{{room.id}}')" >
+                        {{room.name}}
+                        <div class="ui teal label" ng-class="showCount('{{room.id}}')">{{room.unread}}</div>
                     </a>
-                    <div class="content">
-                        <a class="author">{{message.from}}</a>
-                        <div class="text">{{message.text}}</div>
-                    </div>
                 </div>
             </div>
+        </div>
+
+
+        <div class="ten wide stretched column">
+            <div scroll-glue class="chatbox">
+                <div class="ui comments">
+                    <div class="comment" ng-repeat="message in messages track by $index">
+                        <a class="ui avatar">
+                            <img src="images/av.png">
+                        </a>
+                        <div class="content">
+                            <a class="author">{{message.from}}</a>
+                            <div class="text">{{message.text}}</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <form class="ui bottom attached action input" ng-submit="addMessage()">
+                <input ng-model="newMessage" />
+                <button class="ui blue icon button" type="submit">
+                    <i class="icon edit"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="three wide column">
 
         </div>
-        <form class="ui bottom attached action input" ng-submit="addMessage()">
-            <input ng-model="newMessage" />
-            <button class="ui blue icon button" type="submit">
-                <i class="icon edit"></i>
-            </button>
-        </form>
     </div>
 </div>
 

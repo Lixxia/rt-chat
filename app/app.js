@@ -1,37 +1,100 @@
 var chatApp = angular.module('app', ['ngRoute','luegg.directives']);
 chatApp.config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
     $routeProvider.
-        when('/chat',{
+        //when('/chat',{
+        //    templateUrl: 'view/chat.html',
+        //    controller: 'ChatCtrlNull'
+        //}).
+        when('/chat/:room/',{
             templateUrl: 'view/chat.html',
             controller: 'ChatCtrl'
         }).
         otherwise({
-            redirectTo: 'chat'
+            redirectTo: '/chat/0/'
         });
 }]);
 
-chatApp.controller("ChatCtrl", function($scope, wsService) {
-    $scope.messages = [];
+chatApp.controller("ChatCtrl", function($scope, wsService, roomService, $location, $rootScope, Emojis) {
+    //Set current room, based on URL
+    $rootScope.currentRoom = $location.path().slice(-2,-1);
+    console.log("current room got", $rootScope.currentRoom);
 
-    $scope.receiveMessage = function(message) {
+    //Retrieve list of rooms from promise
+    wsService.getRooms().then(function(rooms) {
+        $scope.rooms = rooms;
+    });
+
+    // Changing active room
+    $scope.menuClass = function (page) {
+        var currentRoute = $location.path().slice(-2,-1);
+        return page === currentRoute ? 'active teal' : '';
+    };
+
+    // Display the message count only we've got new unread messages
+    $scope.showCount = function (id) {
+        $scope.rooms[$rootScope.currentRoom].unread = 0;
+        return $scope.rooms[id].unread === 0 ? 'hidden' : '';
+    };
+
+    // Update the unread count in menu if another room receives a message
+    $scope.menuCount = function(roomId) {
         $scope.$apply(function () { // wrapper to update view
-            $scope.messages.push({from: message.from, text: message.text});
+            $scope.rooms[roomId].unread++;
         });
     };
 
+    $scope.messages = [];
+
+    //Retrieve history for room from promise + populate messages
+    //wsService.getHistory($rootScope.currentRoom).then(function(history) {
+    //    $scope.history = history;
+    //    for(var i=0; i < $scope.history[$rootScope.currentRoom].history.length; i++) {
+    //        //console.log("history playbyplay",$scope.history[$rootScope.currentRoom].history[i]);
+    //        $scope.messages.push($scope.history[$rootScope.currentRoom].history[i]);
+    //    }
+    //});
+
+    roomService.readRoom($rootScope.currentRoom).then(function(roomHist) {
+        for(var j=0; j < roomHist.length; j++) {
+            $scope.messages.push(roomHist[j]);
+            console.log("msgs", $scope.messages[j]);
+        }
+        //roomService.clearRoom($rootScope.currentRoom);
+    });
+
+    $scope.receiveMessage = function(message) {
+        // Check if we're in the correct room to receive message
+        if($rootScope.currentRoom === message.room) {
+            console.log("Current room msg");
+            $scope.$apply(function () { // another wrapper to update view because angular
+                $scope.messages.push({room: message.room, from: message.from, text: message.text});
+            });
+        }
+        else {
+            console.log("Message received in different room, update unread count and store message for later.");
+            $scope.menuCount(message.room);
+            roomService.pushMessage({room: message.room, from: message.from, text: message.text});
+        }
+    };
+
     $scope.addMessage = function () {
-        wsService.send($scope.newMessage);
+        // append room ID to end of message so we know where it came from
+        // pretty dumb solution, come back and fix later. TODO
+        wsService.send($scope.newMessage + $rootScope.currentRoom);
         $scope.newMessage="";
     };
 
     wsService.addListener($scope.receiveMessage);
+
+    // display some emojis
+    $scope.emojis = Emojis.all();
 });
 
-chatApp.service("wsService", function() {
+chatApp.service("wsService", function($q, $timeout) {
     var connection = new WebSocket('ws://192.168.1.7:8000');
 
     var wsService = {};
-    var listeners = []; // room names : arrays of listeners : messages
+    var listeners = []; // room id, username, message
 
     wsService.addListener = function (listener) {
         listeners.push(listener);
@@ -44,6 +107,12 @@ chatApp.service("wsService", function() {
     connection.onopen = function () {
         // logon element show
         console.log("onopen");
+        emojify.setConfig({
+            img_dir: '/app/bower_components/emojify.js/dist/images/basic',
+            mode: 'sprite'
+        });
+        emojify.run();
+
         $('.ui.modal')
             .modal('setting', 'closable', false)
             .modal('show')
@@ -55,8 +124,6 @@ chatApp.service("wsService", function() {
     };
 
     connection.onmessage = function (message) {
-        console.log("on message is called");
-
         // handle incoming message
         var json = JSON.parse(message.data);
         if(json.type === 'name') {
@@ -64,22 +131,102 @@ chatApp.service("wsService", function() {
         }
         else if(json.type === 'message') {
             console.log("twas a message!");
-            wsService.username = json.data.from;
             for(var i=0; i<listeners.length; i++) {
-                //listeners[i](json.data.text);
                 listeners[i]({
-                    from: json.data.from, text: json.data.text
+                    room: json.data.room, from: json.data.from, text: json.data.text
                 });
             }
         }
-        //else if(json.type === 'history') {
-        //    // feed history to users
-        //}
-        else {
-            console.log("something went wrong.");
+        else if(json.type === 'rooms') {
+            wsService.rooms = json.data;
         }
+        else if(json.type === 'history') {
+            // feed history to users upon joining channels
+            wsService.history = json.data;
+            console.log("history here!", json.data);
+        }
+        else {
+            console.log("Unknown json type.");
+        }
+    };
+
+    // Need a promise to get history
+    wsService.getHistory = function(roomId) {
+        var deferred = $q.defer();
+
+        $timeout(function() {
+            deferred.resolve(wsService.history);
+        }, 100);
+
+        return deferred.promise;
+    };
+
+    // Need another promise to get the rooms list
+    wsService.getRooms = function() {
+        var deferred = $q.defer();
+
+        $timeout(function() {
+            deferred.resolve(wsService.rooms);
+        }, 50);
+
+        return deferred.promise;
     };
 
     return wsService;
 
+});
+
+// service to hold info for each room?
+chatApp.service("roomService", function ($q, $timeout) {
+    roomService = {
+        0: [],
+        1: [],
+        2: [],
+        3: []
+    };
+
+    roomService.pushMessage = function(message) {
+        console.log("calling pushMessage with room: "+ message.room + 'and message: ' + message);
+        if(roomService[message.room].indexOf(message) == -1) {
+            console.log("exists??");
+            roomService[message.room].push(message);
+        }
+    };
+
+    //roomService.readRoom = function(roomNum) {
+    //    console.log("rs 1", roomService[0]);
+    //    console.log("returned roomdata", roomService[roomNum]);
+    //    return roomService[roomNum];
+    //};
+
+    roomService.readRoom = function(roomNum) {
+        var deferred = $q.defer();
+
+        $timeout(function() {
+            deferred.resolve(roomService[roomNum]);
+            //roomService[roomNum] = [];
+        }, 50);
+
+        return deferred.promise;
+    };
+
+    roomService.clearRoom = function(roomNum) {
+        roomService[roomNum] = [];
+    };
+
+    return roomService;
+});
+
+chatApp.factory("Emojis", function() {
+    emojis = [":bowtie:",":laughing:",":blush:",":smiley:",":heart_eyes:",":kissing_closed_eyes:",":+1:",
+    ":relieved:",":satisfied:",":grimacing:",":confused:",":hushed:",":expressionless:",":unamused:",":sweat_smile:",
+    ":sweat:",":clap:",":yellow_heart:",":blue_heart:",":purple_heart:",":green_heart:",":star:",":exclamation:",
+    ":musical_note:",":fire:",":question:",":dash:",":metal:"
+    ];
+
+    return {
+        all: function () {
+            return emojis;
+        }
+    };
 });
