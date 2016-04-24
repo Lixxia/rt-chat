@@ -33,7 +33,7 @@ wsServer.on('request', function(request) {
     console.log((new Date()) + ' Connection from ' + request.origin + '.');
     if (!originAllowed(request.origin)) {
         // if not allowed, reject request and return
-        request.reject;
+        request.reject();
         console.log((new Date()) + ' Connection from ' + request.origin + ' was rejected.');
         return;
     }
@@ -72,7 +72,7 @@ wsServer.on('request', function(request) {
                 };
                 // keep a brief message history, organized by rooms
                 msgHistory[msgData.room].history.push(msgData);
-                msgHistory = msgHistory.slice(-100);
+                msgHistory = msgHistory.slice(-100); // fix this
 
                 // send message to connected clients
                 var json = JSON.stringify({ type:'message', data: msgData });
